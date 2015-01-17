@@ -119,23 +119,21 @@ public class DustAndMagnet extends PApplet {
             p.updateLocation();
             p.draw(this);
         }
-        if (!mousePressed) {
-            boolean done = false;
-            for (int i = particles.size() - 1; i >= 0; i--) {
-                Particle p = particles.get(i);
-                if (!done && p.contains(mouseX, mouseY)) {
-                    if (p.name != null) {
-                        textSize(16);
-                        fill(256f);
-                        text(p.name, p.loc.x + 5, p.loc.y - 5);
-                        done = true;
-                    }
-                }
-                if (p.drawName) {
+        boolean done = false;
+        for (int i = particles.size() - 1; i >= 0; i--) {
+            Particle p = particles.get(i);
+            if(!mousePressed && !done && p.contains(mouseX, mouseY)) {
+                if (p.name != null) {
                     textSize(16);
                     fill(256f);
                     text(p.name, p.loc.x + 5, p.loc.y - 5);
+                    done = true;
                 }
+            }
+            if(p.drawName) {
+                textSize(16);
+                fill(256f);
+                text(p.name, p.loc.x + 5, p.loc.y - 5);
             }
         }
     }
