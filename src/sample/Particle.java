@@ -19,23 +19,34 @@ public class Particle {
      * 0.0 and 1.0 inclusive
      */
     Map<String, Double> data;
-    Map<String, String> category;
+    String make;
+    String name;
+    // highlight color
+    PVector hc;
+
+    boolean drawName;
 
     public Particle(int x, int y) {
-        this(x, y, new HashMap<String, Double>(), new HashMap<String, String>());
+        this(x, y, new HashMap<String, Double>(), "Mustang", "Ford");
     }
 
-    public Particle(int x, int y, Map<String, Double> data, Map<String, String> category) {
+    public Particle(int x, int y, Map<String, Double> data, String name, String make) {
         loc = new PVector(x, y);
         vel = new PVector();
         accel = new PVector();
         this.data = data;
-        this.category = category;
+        this.name = name;
+        this.make = make;
+        drawName = false;
     }
 
     public void draw(DustAndMagnet p) {
         p.fill(66, 255, 35, 100);
         p.stroke(66, 255, 35, 100);
+        if (hc != null) {
+            p.fill(hc.x, hc.y, hc.z, 100);
+            p.stroke(hc.x, hc.y, hc.z, 100);
+        }
         p.ellipse(loc.x, loc.y, 20, 20);
     }
 
@@ -50,8 +61,8 @@ public class Particle {
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);
-            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 75;
-            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 75;
+            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 50;
+            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 50;
         }
     }
 

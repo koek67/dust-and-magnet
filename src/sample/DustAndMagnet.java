@@ -16,6 +16,7 @@ public class DustAndMagnet extends PApplet {
 
     private Map<String, Magnet> magnets;
     private ArrayList<Particle> particles;
+    private Map<String, LinkedList<Particle>> makes;
 
     // selecting magnets
     private Magnet selected;
@@ -23,7 +24,8 @@ public class DustAndMagnet extends PApplet {
 
     // UI stuff
     // button top-lefts
-    private Button[] buttons;
+    private Button[] btnMag;
+    private Button[] btnMake;
     private PVector buttonSize;
     private Button trash;
 
@@ -37,7 +39,7 @@ public class DustAndMagnet extends PApplet {
      */
     public void fillParticles() {
         Random numGen = new Random();
-        int numParticles = 3000;
+        int numParticles = 700;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -47,9 +49,32 @@ public class DustAndMagnet extends PApplet {
             data.put("2", numGen.nextDouble());
             data.put("3", numGen.nextDouble());
             data.put("4", numGen.nextDouble());
-            HashMap<String, String> category = new HashMap<String, String>();
-            category.put("name", "" + i);
-            particles.add(new Particle(randX, randY, data, category));
+            String make = "";
+            if (i % 2 == 0)
+                make = "Honda";
+            else
+                make = "Toyota";
+            Particle a = new Particle(randX, randY, data, "" + i, make);
+            particles.add(a);
+            addCategoryEntry(a);
+        }
+    }
+
+    /**
+     *
+     * @param a
+     * @return new category?
+     */
+    public boolean addCategoryEntry(Particle a) {
+//        System.out.println(a.make);
+        if (makes.get(a.make) != null) {
+            makes.get(a.make).add(a);
+            return false;
+        } else {
+            LinkedList<Particle> cars = new LinkedList<Particle>();
+            cars.add(a);
+            makes.put(a.make, cars);
+            return true;
         }
     }
 
@@ -59,6 +84,8 @@ public class DustAndMagnet extends PApplet {
 
         magnets = new HashMap<String, Magnet>();
         particles = new ArrayList<Particle>();
+
+        makes = new HashMap<String, LinkedList<Particle>>();
 
         background(32);
         fillParticles();
@@ -93,14 +120,49 @@ public class DustAndMagnet extends PApplet {
             p.draw(this);
         }
         boolean done = false;
+        for (int i = particles.size() - 1; i >= 0; i--) {
+            Particle p = particles.get(i);
+            if(!done && p.contains(mouseX, mouseY)) {
+                if (p.name != null) {
+                    textSize(16);
+                    fill(256f);
+                    text(p.name, p.loc.x + 5, p.loc.y - 5);
+                    done = true;
+                }
+            }
+            if(p.drawName) {
+                textSize(16);
+                fill(256f);
+                text(p.name, p.loc.x + 5, p.loc.y - 5);
+            }
+        }
+    }
+
+    public void mouseClicked() {
+        boolean done = false;
         for (int i = particles.size() - 1; i >= 0 && !done; i--) {
             Particle p = particles.get(i);
             if(p.contains(mouseX, mouseY)) {
-                if (p.category.get("name") != null) {
-                    textSize(16);
-                    fill(256f);
-                    text(p.category.get("name"), p.loc.x + 5, p.loc.y - 5);
-                    done = true;
+                p.drawName = !p.drawName;
+                done = true;
+            }
+        }
+        for (int i = 0; i < btnMake.length; i++) {
+            if (btnMake[i].contains(mouseX, mouseY)) {
+                // if the elements aren't highlighted, then highlight them
+                // otherwise set highlight color to null
+                // this is a "Toggle"
+                if (makes.get(btnMake[i].name).get(0).hc == null) {
+                    int r = Integer.parseInt(("" + (btnMake[i].name.hashCode())).substring(0, 3));
+                    int g = Integer.parseInt(("" + (btnMake[i].name.hashCode())).substring(1, 4));
+                    int b = Integer.parseInt(("" + (btnMake[i].name.hashCode())).substring(3, 6));
+                    for (Particle p : makes.get(btnMake[i].name)) {
+                        p.hc = new PVector(r, g, b);
+                    }
+                } else {
+                    for (Particle p : makes.get(btnMake[i].name)) {
+                        p.hc = null;
+                    }
                 }
             }
         }
@@ -152,29 +214,44 @@ public class DustAndMagnet extends PApplet {
     }
 
     public void initUI() {
-        buttons = new Button[4];
+        btnMag = new Button[4];
         buttonSize = new PVector(60, 50);
         PVector button = new PVector(10, HEIGHT - buttonSize.y - 10);
         for (int i = 0; i < 4; i++) {
-            buttons[i] = new Button((int)button.x, (int)button.y, (int)buttonSize.x, (int)buttonSize.y);
+            btnMag[i] = new Button((int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
             button.x += buttonSize.x + 10;
         }
 
         trash = new Button("Trash", new Rectangle(WIDTH - (int)buttonSize.x - 10,
                 (int)HEIGHT - (int)buttonSize.y - 10, (int)buttonSize.x, (int)buttonSize.y));
+
+
+        System.out.println(makes);
+        Iterable<String> makeNames = makes.keySet();
+        btnMake = new Button[makes.size()];
+        buttonSize.x /= 2;
+        int i = 0;
+        for (String m : makeNames) {
+            btnMake[i++] = new Button(m, (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
+            button.x += buttonSize.x + 10;
+            System.out.println(m);
+        }
     }
 
     public void drawUI() {
         fill(200);
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].draw(this);
+        for (int i = 0; i < btnMag.length; i++) {
+            btnMag[i].draw(this);
+        }
+        for (int i = 0; i < btnMake.length; i++) {
+            btnMake[i].draw(this);
         }
         trash.draw(this);
     }
 
     public String inButton(int x, int y) {
-        for (int i = 0; i < buttons.length; i++) {
-            if (buttons[i].contains(x, y)) return buttons[i].name;
+        for (int i = 0; i < btnMag.length; i++) {
+            if (btnMag[i].contains(x, y)) return btnMag[i].name;
         }
         return null;
     }
