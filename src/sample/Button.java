@@ -30,7 +30,7 @@ public class Button {
         d.rect(r.x, r.y, r.width, r.height);
         d.fill(0);
         d.textSize(20);
-        d.text(name, r.x + r.width / 2 - 6, r.y + r.height / 2 + 6);
+        d.text(name, r.x + r.width / 2 - 6 * name.length(), r.y + r.height / 2 + 6);
     }
 
     public boolean contains(int x, int y) { return r.contains(x, y); }

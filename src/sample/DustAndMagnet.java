@@ -1,6 +1,7 @@
 package sample;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PVector;
 
 import java.util.*;
@@ -122,7 +123,7 @@ public class DustAndMagnet extends PApplet {
         boolean done = false;
         for (int i = particles.size() - 1; i >= 0; i--) {
             Particle p = particles.get(i);
-            if(!mousePressed && !done && p.contains(mouseX, mouseY)) {
+            if(selected == null && !done && p.contains(mouseX, mouseY)) {
                 if (p.name != null) {
                     textSize(16);
                     fill(256f);
@@ -214,8 +215,11 @@ public class DustAndMagnet extends PApplet {
     }
 
     public void initUI() {
+        // TODO font fall backs or more native choices
+        textFont(new PFont(PFont.findFont("Andale Mono"), true));
+
         btnMag = new Button[4];
-        buttonSize = new PVector(60, 50);
+        buttonSize = new PVector(60, 60);
         PVector button = new PVector(10, HEIGHT - buttonSize.y - 10);
         for (int i = 0; i < 4; i++) {
             btnMag[i] = new Button((int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
@@ -225,16 +229,14 @@ public class DustAndMagnet extends PApplet {
         trash = new Button("Trash", new Rectangle(WIDTH - (int)buttonSize.x - 10,
                 (int)HEIGHT - (int)buttonSize.y - 10, (int)buttonSize.x, (int)buttonSize.y));
 
-
-        System.out.println(makes);
+        buttonSize = new PVector(90, 30);
         Iterable<String> makeNames = makes.keySet();
         btnMake = new Button[makes.size()];
-        buttonSize.x /= 2;
+        button = new PVector(10, 10);
         int i = 0;
         for (String m : makeNames) {
             btnMake[i++] = new Button(m, (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
-            button.x += buttonSize.x + 10;
-            System.out.println(m);
+            button.y += buttonSize.y + 10;
         }
     }
 
