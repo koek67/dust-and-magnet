@@ -41,6 +41,7 @@ public class DustAndMagnet extends PApplet {
             data.put("1", numGen.nextDouble());
             data.put("2", numGen.nextDouble());
             data.put("3", numGen.nextDouble());
+            data.put("4", numGen.nextDouble());
             particles.add(new Particle(randX, randY, this, data));
         }
     }

@@ -20,6 +20,8 @@ import processing.core.PApplet;
  */
 public class Main extends Application {
 
+    public static int type = 0;
+
     @Override
     public void start(Stage primaryStage) {
         Button btn = new Button();
@@ -28,13 +30,8 @@ public class Main extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                if (Math.random() < .3)
-                    DustAndMagnet.addingMagnet("1", 1.0);
-                else if (Math.random() > .6)
-                    DustAndMagnet.addingMagnet("2", 1.0);
-
-                else
-                    DustAndMagnet.addingMagnet("3", 1.0);
+                int t = type++ % 4 + 1;
+                DustAndMagnet.addingMagnet("" + t, 1.0);
             }
         });
 
