@@ -16,12 +16,15 @@ public class Magnet {
     private String name;
     private PVector loc;
     private double value;
-    private DustAndMagnet p;
+    DustAndMagnet p;
+    private float rad2;
+    private float dia;
 
     public Magnet(String name, double value, int x, int y, DustAndMagnet p) {
         this.name = name;
         this.value = value;
         loc = new PVector(x, y);
+        setRadius(25);
         this.p = p;
     }
 
@@ -36,8 +39,16 @@ public class Magnet {
     public String getName() {return name;}
     public double getValue() {return value;}
     public PVector getLoc() {return loc;}
-
+    public void setLoc(float x, float y) { loc.x = x; loc.y = y; }
+    public void setRadius(float rad) {
+        rad2 = rad * rad;
+        dia = rad * 2;
+    }
     public void draw() {
-        p.ellipse(loc.x, loc.y, 50, 50);
+        p.ellipse(loc.x, loc.y, dia, dia);
+    }
+
+    public boolean contains (int x, int y) {
+        return ((loc.x - x) * (loc.x - x) + (loc.y - y) * (loc.y - y)) <= rad2;
     }
 }

@@ -28,7 +28,13 @@ public class Main extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                DustAndMagnet.addingMagnet("name", 70);
+                if (Math.random() < .3)
+                    DustAndMagnet.addingMagnet("1", 1.0);
+                else if (Math.random() > .6)
+                    DustAndMagnet.addingMagnet("2", 1.0);
+
+                else
+                    DustAndMagnet.addingMagnet("3", 1.0);
             }
         });
 

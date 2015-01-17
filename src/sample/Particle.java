@@ -38,20 +38,25 @@ public class Particle {
     }
 
     public void updateLocation() {
-        vel.x += accel.x;
-        vel.y += accel.y;
+//        vel.x += accel.x;
+//        vel.y += accel.y;
         loc.x += vel.x;
         loc.y += vel.y;
     }
 
     public void attract() {
         ArrayList<Magnet> ms = p.getMagnets();
-        accel = new PVector();
+        vel = new PVector();
+        // the two checks are redundant
+        if (sample.DustAndMagnet.magnetAdding && sample.DustAndMagnet.adding != null) {
+            String attrName = sample.DustAndMagnet.adding.getName();
+
+        }
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);
-            accel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 70000 * .99;
-            accel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 70000 * .99;
+            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 100;
+            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 100;
         }
     }
 

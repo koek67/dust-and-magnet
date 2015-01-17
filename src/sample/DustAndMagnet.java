@@ -1,6 +1,8 @@
 package sample;
 
 import processing.core.PApplet;
+import processing.core.PVector;
+
 import java.util.*;
 
 /**
@@ -12,12 +14,15 @@ public class DustAndMagnet extends PApplet {
     public static int HEIGHT = 640;
 
     public static Magnet adding = null;
-    private static boolean magnetAdding = false;
-    private static String addingString = "";
-    private static int addingValue = -1;
+    public static boolean magnetAdding = false;
+    public static String addingString = "";
+    public static double addingValue = -1;
 
     private ArrayList<Magnet> magnets = new ArrayList<Magnet>();
     private ArrayList<Particle> particles = new ArrayList<Particle>();
+
+    private Magnet selected;
+    private PVector offset;
 
     public ArrayList<Magnet> getMagnets() {return magnets;}
 
@@ -33,8 +38,9 @@ public class DustAndMagnet extends PApplet {
             int randY = numGen.nextInt(HEIGHT);
             double val = numGen.nextDouble();
             HashMap<String, Double> data = new HashMap<String, Double>();
-            data.put("name", numGen.nextDouble());
-            System.out.println(data.get("name"));
+            data.put("1", numGen.nextDouble());
+            data.put("2", numGen.nextDouble());
+            data.put("3", numGen.nextDouble());
             particles.add(new Particle(randX, randY, this, data));
         }
     }
@@ -47,12 +53,13 @@ public class DustAndMagnet extends PApplet {
      * clicked at which point the magnet will lock into its
      * location.
      */
-    public static void addingMagnet(String name, int value){
+    public static void addingMagnet(String name, double value){
         sample.DustAndMagnet.magnetAdding = true;
         sample.DustAndMagnet.addingString = name;
         sample.DustAndMagnet.addingValue = value;
-        adding = new Magnet();
+        adding = new Magnet(name, value, 0, 0, null);
     }
+
     @Override
     public void setup() {
         size(HEIGHT, WIDTH);
@@ -67,7 +74,7 @@ public class DustAndMagnet extends PApplet {
         // if a new magnet is being added, draw it
         // at the mouse cursor location
         if (magnetAdding && adding != null) {
-            adding = new Magnet(addingString, addingValue, mouseX, mouseY, this);
+            adding.p = this;
             adding.draw();
         }
 
@@ -93,6 +100,33 @@ public class DustAndMagnet extends PApplet {
             adding = null;
         }
     }
+
+    public void mousePressed() {
+        // going in reverse to respect the order that they are drawn on screen
+        // (top magnet will be selected in favor of ones on the bottom)
+        for (int i = magnets.size() - 1; i >= 0; i--) {
+            System.out.println(magnets.get(i));
+            if (magnets.get(i).contains(mouseX, mouseY)) {
+                selected = magnets.get(i);
+                offset = new PVector(mouseX, mouseY);
+                offset.sub(selected.getLoc());
+                return;
+            }
+        }
+    }
+
+    public void mouseDragged() {
+        if (selected == null) { return; }
+        selected.setLoc(mouseX - offset.x, mouseY - offset.y);
+    }
+
+    public void mouseReleased() {
+        if (selected == null) { return; }
+        System.out.println("Released");
+        selected = null;
+    }
+
+
 
 
 
