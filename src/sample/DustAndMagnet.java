@@ -11,8 +11,8 @@ import java.awt.Rectangle;
  * Dust and Magnet simulation.
  */
 public class DustAndMagnet extends PApplet {
-    public static int WIDTH = 800;
-    public static int HEIGHT = 640;
+    public static int WIDTH = 1280;
+    public static int HEIGHT = 800;
 
     private Map<String, Magnet> magnets;
     private ArrayList<Particle> particles;
@@ -32,12 +32,12 @@ public class DustAndMagnet extends PApplet {
     }
 
     /**
-     * This method will populate the particles ArrayList with 100
+     * This method will populate the particles ArrayList with 500
      * randomly arranged particles.
      */
     public void fillParticles() {
         Random numGen = new Random();
-        int numParticles = 100;
+        int numParticles = 3000;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -47,26 +47,30 @@ public class DustAndMagnet extends PApplet {
             data.put("2", numGen.nextDouble());
             data.put("3", numGen.nextDouble());
             data.put("4", numGen.nextDouble());
-            particles.add(new Particle(randX, randY, data));
+            HashMap<String, String> category = new HashMap<String, String>();
+            category.put("name", "" + i);
+            particles.add(new Particle(randX, randY, data, category));
         }
     }
 
     @Override
     public void setup() {
         size(WIDTH, HEIGHT);
-        stroke(155, 0, 0);
 
         magnets = new HashMap<String, Magnet>();
         particles = new ArrayList<Particle>();
 
-        background(255);
+        background(32);
         fillParticles();
         initUI();
     }
 
     @Override
     public void draw() {
-        background(255);
+//        stroke(64, 64, 64, 100);
+//        fill(64, 64, 64, 100);
+//        rect(0, 0, WIDTH, HEIGHT);
+        background(32);
         // if a new magnet is being added, draw it
         // at the mouse cursor location
         drawDnM();
@@ -87,6 +91,18 @@ public class DustAndMagnet extends PApplet {
             p.attract(this);
             p.updateLocation();
             p.draw(this);
+        }
+        boolean done = false;
+        for (int i = particles.size() - 1; i >= 0 && !done; i--) {
+            Particle p = particles.get(i);
+            if(p.contains(mouseX, mouseY)) {
+                if (p.category.get("name") != null) {
+                    textSize(16);
+                    fill(256f);
+                    text(p.category.get("name"), p.loc.x + 5, p.loc.y - 5);
+                    done = true;
+                }
+            }
         }
     }
 
@@ -123,10 +139,6 @@ public class DustAndMagnet extends PApplet {
             return;
         }
         selected.setLoc(mouseX - offset.x, mouseY - offset.y);
-    }
-
-    public void mouseMoved() {
-
     }
 
     public void mouseReleased() {

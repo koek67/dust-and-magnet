@@ -43,7 +43,8 @@ public class Magnet {
         dia = rad * 2;
     }
     public void draw(DustAndMagnet d) {
-        d.fill(256);
+        d.stroke(0);
+        d.fill(256f);
         d.ellipse(loc.x, loc.y, dia, dia);
         d.fill(0);
         d.textSize(20);
