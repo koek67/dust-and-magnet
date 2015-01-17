@@ -42,8 +42,12 @@ public class Magnet {
         rad2 = rad * rad;
         dia = rad * 2;
     }
-    public void draw(DustAndMagnet p) {
-        p.ellipse(loc.x, loc.y, dia, dia);
+    public void draw(DustAndMagnet d) {
+        d.fill(256);
+        d.ellipse(loc.x, loc.y, dia, dia);
+        d.fill(0);
+        d.textSize(20);
+        d.text(name, loc.x - 6, loc.y + 6);
     }
 
     public boolean contains (int x, int y) {

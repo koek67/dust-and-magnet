@@ -32,6 +32,7 @@ public class Particle {
     }
 
     public void draw(DustAndMagnet p) {
+        p.fill(256);
         p.ellipse(loc.x, loc.y, 10, 10);
     }
 
@@ -41,7 +42,7 @@ public class Particle {
     }
 
     public void attract(DustAndMagnet p) {
-        ArrayList<Magnet> ms = p.getMagnets();
+        Iterable<Magnet> ms = (Iterable<Magnet>) p.getMagnets();
         vel = new PVector();
         for (Magnet m : ms) {
             String attrName = m.getName();
