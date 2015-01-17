@@ -1,4 +1,3 @@
-
 package parser;
 import java.util.*;
 import java.io.*;
@@ -60,9 +59,9 @@ public class Parser {
     min = data.get(0).cyl;
     for (Data d : data) {
       if (d.cyl > max)
-      max = d.cyl;
+        max = d.cyl;
       else if (d.cyl < min)
-      min = d.cyl;
+        min = d.cyl;
     }
     range = max - min;
     for (Data d : data) {
@@ -74,9 +73,9 @@ public class Parser {
     min = data.get(0).cF;
     for (Data d : data) {
       if (d.cF > max)
-      max = d.cF;
+        max = d.cF;
       else if (d.cF < min)
-      min = d.cF;
+        min = d.cF;
     }
     range = max - min;
     for (Data d : data) {
@@ -88,9 +87,9 @@ public class Parser {
     min = data.get(0).hwy;
     for (Data d : data) {
       if (d.hwy > max)
-      max = d.hwy;
+        max = d.hwy;
       else if (d.hwy < min)
-      min = d.hwy;
+        min = d.hwy;
     }
     range = max - min;
     for (Data d : data) {
