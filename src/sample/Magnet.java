@@ -16,24 +16,22 @@ public class Magnet {
     private String name;
     private PVector loc;
     private double value;
-    DustAndMagnet p;
     private float rad2;
     private float dia;
 
-    public Magnet(String name, double value, int x, int y, DustAndMagnet p) {
+    public Magnet(String name, double value, int x, int y) {
         this.name = name;
         this.value = value;
         loc = new PVector(x, y);
         setRadius(25);
-        this.p = p;
     }
 
-    public Magnet(double value, int x, int y, DustAndMagnet p) {
-        this("name", value, x, y, p);
+    public Magnet(double value, int x, int y) {
+        this("name", value, x, y);
     }
 
     public Magnet() {
-        this("", -1, -1, -1, null);
+        this("", -1, -1, -1);
     }
 
     public String getName() {return name;}
@@ -44,7 +42,7 @@ public class Magnet {
         rad2 = rad * rad;
         dia = rad * 2;
     }
-    public void draw() {
+    public void draw(DustAndMagnet p) {
         p.ellipse(loc.x, loc.y, dia, dia);
     }
 

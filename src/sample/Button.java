@@ -25,6 +25,10 @@ public class Button {
         this("" + i++, x, y, width, height);
     }
 
+    public void draw(DustAndMagnet d) {
+        d.rect(r.x, r.y, r.width, r.height);
+    }
+
     public boolean contains(int x, int y) { return r.contains(x, y); }
 
 }

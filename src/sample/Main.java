@@ -18,39 +18,14 @@ import processing.core.PApplet;
  *
  * @author koushikkrishnan
  */
-public class Main extends Application {
-
-    public static int type = 0;
-
-    @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Add Magnet");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                int t = type++ % 4 + 1;
-                DustAndMagnet.addingMagnet("" + t, 1.0);
-            }
-        });
-
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-
-        Scene scene = new Scene(root, 300, 250);
-
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+public class Main {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         PApplet.main(new String[] { sample.DustAndMagnet.class.getName() });
-        launch(args);
+//        launch(args);
     }
 
 }

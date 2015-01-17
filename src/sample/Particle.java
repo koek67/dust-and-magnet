@@ -19,39 +19,30 @@ public class Particle {
      * 0.0 and 1.0 inclusive
      */
     private Map<String, Double> data;
-    private DustAndMagnet p;
 
-    public Particle(int x, int y, DustAndMagnet p) {
-        this(x, y, p, new HashMap<String, Double>());
+    public Particle(int x, int y) {
+        this(x, y, new HashMap<String, Double>());
     }
 
-    public Particle(int x, int y, DustAndMagnet p, Map<String, Double> data) {
+    public Particle(int x, int y, Map<String, Double> data) {
         loc = new PVector(x, y);
         vel = new PVector();
         accel = new PVector();
-        this.p = p;
         this.data = data;
     }
 
-    public void draw() {
+    public void draw(DustAndMagnet p) {
         p.ellipse(loc.x, loc.y, 10, 10);
     }
 
     public void updateLocation() {
-//        vel.x += accel.x;
-//        vel.y += accel.y;
         loc.x += vel.x;
         loc.y += vel.y;
     }
 
-    public void attract() {
+    public void attract(DustAndMagnet p) {
         ArrayList<Magnet> ms = p.getMagnets();
         vel = new PVector();
-        // the two checks are redundant
-        if (sample.DustAndMagnet.magnetAdding && sample.DustAndMagnet.adding != null) {
-            String attrName = sample.DustAndMagnet.adding.getName();
-
-        }
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);

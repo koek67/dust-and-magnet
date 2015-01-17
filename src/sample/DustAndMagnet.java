@@ -51,7 +51,7 @@ public class DustAndMagnet extends PApplet {
             data.put("2", numGen.nextDouble());
             data.put("3", numGen.nextDouble());
             data.put("4", numGen.nextDouble());
-            particles.add(new Particle(randX, randY, this, data));
+            particles.add(new Particle(randX, randY, data));
         }
     }
 
@@ -67,7 +67,7 @@ public class DustAndMagnet extends PApplet {
         sample.DustAndMagnet.magnetAdding = true;
         sample.DustAndMagnet.addingString = name;
         sample.DustAndMagnet.addingValue = value;
-        adding = new Magnet(name, value, 0, 0, null);
+        adding = new Magnet(name, value, 0, 0);
     }
 
     @Override
@@ -85,8 +85,7 @@ public class DustAndMagnet extends PApplet {
         // if a new magnet is being added, draw it
         // at the mouse cursor location
         if (magnetAdding && adding != null) {
-            adding.p = this;
-            adding.draw();
+            adding.draw(this);
         }
         drawDnM();
         drawUI();
@@ -97,15 +96,15 @@ public class DustAndMagnet extends PApplet {
         // iterate through all the current magnets
         // and draw them
         for (Magnet m : magnets) {
-            m.draw();
+            m.draw(this);
         }
 
         // iterate through all the current particles
         // and draw them
         for (Particle p : particles) {
-            p.attract();
+            p.attract(this);
             p.updateLocation();
-            p.draw();
+            p.draw(this);
         }
     }
 
@@ -130,7 +129,7 @@ public class DustAndMagnet extends PApplet {
 
         String btnName = inButton(mouseX, mouseY);
         if (!btnName.equals("")) {
-            Magnet newMagnet = new Magnet(btnName, 1, mouseX, mouseY, this);
+            Magnet newMagnet = new Magnet(btnName, 1, mouseX, mouseY);
             magnets.add(newMagnet);
             selectMagnet(newMagnet, mouseX, mouseY);
         }
