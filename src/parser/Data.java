@@ -6,33 +6,36 @@ import java.util.*;
 public class Data {
     // normalized data
     public HashMap<String, Double> norm;
-    private int year;
-    public double liters, cyl, cF, hwy;
-    public String make, model, cat;
+    public double hp;
+    public double liters, cyl, cmpg, hmpg, price;
+    public String name, cat;
 
-    public Data(int year,String make,String model,double liters,double cyl,double cF,double hwy,String cat) {
-        this.year = year;
-        this.make = make;
-        this.model = model;
-        this.liters = liters;
-        this.cyl = cyl;
-        this.cF = cF;
-        this.hwy = hwy;
-        this.cat = cat;
-    }
+    public Data(){}
+
 
     public void makeStuff() {
         norm = new HashMap<String, Double>();
         norm.put("Liters", liters);
         norm.put("Cylinders", cyl);
-        norm.put("City MPG", cF);
-        norm.put("Hwy MPG", hwy);
+        norm.put("City MPG", cmpg);
+        norm.put("Hwy MPG", hmpg);
         System.out.println(this);
     }
 
-    @Override
     public String toString() {
-        return StringFormatter.format("%10s %s %10f %10f %7f %7f", make, model, liters, cyl, cF, hwy).getValue();
+        String s = "";
+        s += "------------------";
+        s += "Name: " + name + "\n";
+        s += "Cat: " + cat + "\n";
+        s += "Price: " + price + "\n";
+        s += "Size: " + liters + "\n";
+        s += "Cyl: " + cyl + "\n";
+        s += "Hp: " + hp + "\n";
+        s += "cmpg: " + cmpg + "\n";
+        s += "hmpg: " + hmpg + "\n";
+        s += "------------------" + "\n";
+        System.out.println(s);
+        return s;
     }
 
 }
