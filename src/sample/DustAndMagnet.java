@@ -29,7 +29,6 @@ public class DustAndMagnet extends PApplet {
     // button top-lefts
     private Button[] btnMag;
     private Button[] btnTypes;
-    private PVector buttonSize;
     private Button trash;
 
     public Collection<Magnet> getMagnets() {
@@ -64,13 +63,13 @@ public class DustAndMagnet extends PApplet {
 
     public void fillParticles() {
         try {
-            parser.Parser.fileContent();
+            parser.Parser2.fileContent();
         } catch (FileNotFoundException e) {}
         Random numGen = new Random();
-        for (parser.Data d : Parser.data) {
+        for (parser.Data d : parser.Parser2.data) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
-            Particle a = new Particle(randX, randY, d.norm, d.model, d.make);
+            Particle a = new Particle(randX, randY, d.norm, d.name, d.cat);
             particles.add(a);
             addCategoryEntry(a);
         }
@@ -84,13 +83,14 @@ public class DustAndMagnet extends PApplet {
      */
     public boolean addCategoryEntry(Particle a) {
 //        System.out.println(a.make);
-        if (types.get(a.make) != null) {
-            types.get(a.make).add(a);
+        if (types.get(a.cat) != null) {
+            types.get(a.cat).add(a);
             return false;
         } else {
+            System.out.println(a.cat);
             LinkedList<Particle> cars = new LinkedList<Particle>();
             cars.add(a);
-            types.put(a.make, cars);
+            types.put(a.cat, cars);
             return true;
         }
     }
@@ -164,15 +164,18 @@ public class DustAndMagnet extends PApplet {
         }
         for (int i = 0; i < btnTypes.length; i++) {
             if (btnTypes[i].contains(mouseX, mouseY)) {
+                Random numGen = new Random();
                 // if the elements aren't highlighted, then highlight them
                 // otherwise set highlight color to null
                 // this is a "Toggle"
                 if (types.get(btnTypes[i].name).get(0).hc == null) {
-                    int r = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(0, 3));
-                    int g = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(1, 4));
-                    int b = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(2, 5));
+//                    int r = 256, g = 256, b = numGen.nextInt(50) + 200;
+//                    int r = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(0, 3));
+//                    int g = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(1, 4));
+//                    int b = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(3, 6));
                     for (Particle p : types.get(btnTypes[i].name)) {
-                        p.hc = new PVector(r, g, b);
+//                        p.hc = new PVector(r, g, b);
+                        p.hc = new PVector(256, 256, 256);
                     }
                 } else {
                     for (Particle p : types.get(btnTypes[i].name)) {
@@ -231,25 +234,16 @@ public class DustAndMagnet extends PApplet {
     public void initUI() {
         // TODO font fall backs or more native choices
         textFont(new PFont(PFont.findFont("Andale Mono"), true));
-
-        // using <code>particles.get(0).data.size();</code>
-        // to grab a "sample" data entry and find out number of magnets etc
-        btnMag = new Button[particles.get(0).data.size()];
-        Iterator<String> magNames = particles.get(0).data.keySet().iterator();
-        buttonSize = new PVector(60, 60);
-        PVector button = new PVector(10, HEIGHT - buttonSize.y - 10);
-        for (int i = 0; i < btnMag.length; i++) {
-            btnMag[i] = new Button(magNames.next(), (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
-            button.x += buttonSize.x + 10;
-        }
-
-        trash = new Button("Trash", new Rectangle(WIDTH - (int)buttonSize.x - 10,
-                (int)HEIGHT - (int)buttonSize.y - 10, (int)buttonSize.x, (int)buttonSize.y));
+        // current button that is being created
+        // current size of the button
+        PVector buttonSize;
+        PVector button;
 
         buttonSize = new PVector(90, 30);
-        Iterable<String> typeNames = types.keySet();
-        btnTypes = new Button[types.size()];
         button = new PVector(10, 10);
+        Iterable<String> typeNames = types.keySet();
+        System.out.println(types.keySet());
+        btnTypes = new Button[types.size()];
         int i = 0;
         for (String t : typeNames) {
             btnTypes[i++] = new Button(t, (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
@@ -259,17 +253,33 @@ public class DustAndMagnet extends PApplet {
                 button.x += buttonSize.x + 10;
             }
         }
+        button.x += buttonSize.x + 10;
+
+        button.y = 10;
+        buttonSize = new PVector(60, 60);
+        // using <code>particles.get(0).data.size();</code>
+        // to grab a "sample" data entry and find out number of magnets etc
+        System.out.println(particles.get(0).data);
+        btnMag = new Button[particles.get(0).data.size()];
+        Iterator<String> magNames = particles.get(0).data.keySet().iterator();
+        for (int j = 0; j < btnMag.length; j++) {
+            btnMag[j] = new Button(magNames.next(), (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
+            button.x += buttonSize.x + 10;
+        }
+
+        trash = new Button("Trash", new Rectangle(WIDTH - (int)buttonSize.x - 10,
+                (int)HEIGHT - (int)buttonSize.y - 10, (int)buttonSize.x, (int)buttonSize.y));
     }
 
     public void drawUI() {
         fill(200);
         for (int i = 0; i < btnMag.length; i++) {
-            btnMag[i].draw(this);
+            btnMag[i].draw(this, mouseX, mouseY);
         }
         for (int i = 0; i < btnTypes.length; i++) {
-            btnTypes[i].draw(this);
+            btnTypes[i].draw(this, mouseX, mouseY);
         }
-        trash.draw(this);
+        trash.draw(this, mouseX, mouseY);
     }
 
     public String inButton(int x, int y) {

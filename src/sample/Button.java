@@ -25,8 +25,14 @@ public class Button {
         this("" + i++, x, y, width, height);
     }
 
-    public void draw(DustAndMagnet d) {
-        d.fill(200);
+    public void draw(DustAndMagnet d, int x, int y) {
+        if (contains(x, y)) {
+            d.fill(150);
+        }
+        else {
+            d.fill(200);
+        }
+        d.stroke(256f);
         d.rect(r.x, r.y, r.width, r.height);
         d.fill(0);
         d.textSize(20);

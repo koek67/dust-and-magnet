@@ -13,13 +13,14 @@ public class Data {
     public Data(){}
 
 
-    public void makeStuff() {
+    protected void makeStuff() {
         norm = new HashMap<String, Double>();
         norm.put("Liters", liters);
         norm.put("Cylinders", cyl);
         norm.put("City MPG", cmpg);
         norm.put("Hwy MPG", hmpg);
-        System.out.println(this);
+        norm.put("HP", hp);
+        norm.put("$", price);
     }
 
     public String toString() {

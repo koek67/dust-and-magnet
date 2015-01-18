@@ -3,6 +3,7 @@ package parser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.FileNotFoundException;
 
 /**
  * Created by koushikkrishnan on 1/17/15.
@@ -10,7 +11,7 @@ import java.util.Scanner;
 public class Parser2 {
 
     public static ArrayList<Data> data;
-    public static void fileContent() throws Exception{
+    public static void fileContent() throws FileNotFoundException{
         data = new ArrayList<Data>();
         ArrayList<String> models = new ArrayList<String>();
         ArrayList<String> makes = new ArrayList<String>();
@@ -30,38 +31,13 @@ public class Parser2 {
             Data a = new Data();
             a.name = elem[0];
             int j = 1;
-            for (; j < 7 && !elem[j].equals("0"); j++) {
-            }
-            switch (j) {
-                case 1: {
-                    a.cat = "Sedan";
-                    break;
-                }
-                case 2: {
-                    a.cat = "Sports Car";
-                    break;
-                }
-                case 3: {
-                    a.cat = "SUV";
-                    break;
-                }
-                case 4: {
-                    a.cat = "Wagon";
-                    break;
-                }
-                case 5: {
-                    a.cat = "Minivan";
-                    break;
-                }
-                case 6: {
-                    a.cat = "Pickup";
-                    break;
-                }
-                default: {
-                    a.cat = "hard pass";
-                    System.out.println(j);
-                }
-            }
+            for (; j < 7 && Integer.parseInt(elem[j]) != 1; j++) {}
+            if (j == 1) a.cat = "Sedan";
+            else if (j == 2) a.cat = "Sports Car";
+            else if (j == 3) a.cat = "SUV";
+            else if (j == 4) a.cat = "Wagon";
+            else if (j == 5) a.cat = "Minivan";
+            else if (j == 6) a.cat = "Pickup";
             a.price = Double.parseDouble(elem[9]);
             a.liters = Double.parseDouble(elem[11]);
             a.cyl = Double.parseDouble(elem[12]);
@@ -141,8 +117,23 @@ public class Parser2 {
             d.hp = (d.hp - min) / range;
         }
 
-        System.out.println(data);
+        max = data.get(0).price;
+        min = data.get(0).price;
+        for (Data d : data) {
+            if (d.price > max)
+                max = d.price;
+            else if (d.price < min)
+                min = d.price;
+        }
+        range = max - min;
+        for (Data d : data) {
+            d.price = (d.price - min) / range;
+        }
+
+//        System.out.println(data);
         System.out.println(data.size());
+
+        for (Data d : data) { d.makeStuff(); }
 
     }
 

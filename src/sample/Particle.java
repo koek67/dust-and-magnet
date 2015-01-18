@@ -19,7 +19,7 @@ public class Particle {
      * 0.0 and 1.0 inclusive
      */
     Map<String, Double> data;
-    String make;
+    String cat;
     String name;
     // highlight color
     PVector hc;
@@ -30,13 +30,13 @@ public class Particle {
         this(x, y, new HashMap<String, Double>(), "Mustang", "Ford");
     }
 
-    public Particle(int x, int y, Map<String, Double> data, String name, String make) {
+    public Particle(int x, int y, Map<String, Double> data, String name, String cat) {
         loc = new PVector(x, y);
         vel = new PVector();
         accel = new PVector();
         this.data = data;
         this.name = name;
-        this.make = make;
+        this.cat = cat;
         drawName = false;
     }
 
