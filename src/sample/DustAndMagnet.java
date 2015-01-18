@@ -239,7 +239,7 @@ public class DustAndMagnet extends PApplet {
         PVector buttonSize;
         PVector button;
 
-        buttonSize = new PVector(90, 30);
+        buttonSize = new PVector(120, 30);
         button = new PVector(10, 10);
         Iterable<String> typeNames = types.keySet();
         System.out.println(types.keySet());
@@ -256,7 +256,7 @@ public class DustAndMagnet extends PApplet {
         button.x += buttonSize.x + 10;
 
         button.y = 10;
-        buttonSize = new PVector(60, 60);
+        buttonSize = new PVector(120, 60);
         // using <code>particles.get(0).data.size();</code>
         // to grab a "sample" data entry and find out number of magnets etc
         System.out.println(particles.get(0).data);
