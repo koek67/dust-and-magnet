@@ -1,6 +1,8 @@
 # Dust and Magnet Data Visualization Technique
 
 Inspired by the excellent work the Information Interfaces Lab at Georgia Tech.
+[![Video](http://s3.amazonaws.com/challengepost/photos/production/solution_photos/000/202/363/datas/xlarge.png?1421598063)](https://vimeo.com/117098913)
+
 
 ## How it works
 
