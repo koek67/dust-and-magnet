@@ -1,9 +1,11 @@
 package sample;
 
+import parser.Parser;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PVector;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.awt.Rectangle;
 
@@ -17,7 +19,7 @@ public class DustAndMagnet extends PApplet {
 
     private Map<String, Magnet> magnets;
     private ArrayList<Particle> particles;
-    private Map<String, LinkedList<Particle>> makes;
+    private Map<String, LinkedList<Particle>> types;
 
     // selecting magnets
     private Magnet selected;
@@ -26,7 +28,7 @@ public class DustAndMagnet extends PApplet {
     // UI stuff
     // button top-lefts
     private Button[] btnMag;
-    private Button[] btnMake;
+    private Button[] btnTypes;
     private PVector buttonSize;
     private Button trash;
 
@@ -38,13 +40,12 @@ public class DustAndMagnet extends PApplet {
      * This method will populate the particles ArrayList with 500
      * randomly arranged particles.
      */
-    public void fillParticles() {
+    public void fillParticlesTEST() {
         Random numGen = new Random();
         int numParticles = 700;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
-            double val = numGen.nextDouble();
             HashMap<String, Double> data = new HashMap<String, Double>();
             data.put("1", numGen.nextDouble());
             data.put("2", numGen.nextDouble());
@@ -61,6 +62,21 @@ public class DustAndMagnet extends PApplet {
         }
     }
 
+    public void fillParticles() {
+        try {
+            parser.Parser.fileContent();
+        } catch (FileNotFoundException e) {}
+        Random numGen = new Random();
+        for (parser.Data d : Parser.data) {
+            int randX = numGen.nextInt(WIDTH);
+            int randY = numGen.nextInt(HEIGHT);
+            Particle a = new Particle(randX, randY, d.norm, d.model, d.make);
+            particles.add(a);
+            addCategoryEntry(a);
+        }
+
+    }
+
     /**
      *
      * @param a
@@ -68,13 +84,13 @@ public class DustAndMagnet extends PApplet {
      */
     public boolean addCategoryEntry(Particle a) {
 //        System.out.println(a.make);
-        if (makes.get(a.make) != null) {
-            makes.get(a.make).add(a);
+        if (types.get(a.make) != null) {
+            types.get(a.make).add(a);
             return false;
         } else {
             LinkedList<Particle> cars = new LinkedList<Particle>();
             cars.add(a);
-            makes.put(a.make, cars);
+            types.put(a.make, cars);
             return true;
         }
     }
@@ -82,13 +98,11 @@ public class DustAndMagnet extends PApplet {
     @Override
     public void setup() {
         size(WIDTH, HEIGHT);
+        background(32);
 
         magnets = new HashMap<String, Magnet>();
         particles = new ArrayList<Particle>();
-
-        makes = new HashMap<String, LinkedList<Particle>>();
-
-        background(32);
+        types = new HashMap<String, LinkedList<Particle>>();
         fillParticles();
         initUI();
     }
@@ -148,20 +162,20 @@ public class DustAndMagnet extends PApplet {
                 done = true;
             }
         }
-        for (int i = 0; i < btnMake.length; i++) {
-            if (btnMake[i].contains(mouseX, mouseY)) {
+        for (int i = 0; i < btnTypes.length; i++) {
+            if (btnTypes[i].contains(mouseX, mouseY)) {
                 // if the elements aren't highlighted, then highlight them
                 // otherwise set highlight color to null
                 // this is a "Toggle"
-                if (makes.get(btnMake[i].name).get(0).hc == null) {
-                    int r = Integer.parseInt(("" + (btnMake[i].name.hashCode())).substring(0, 3));
-                    int g = Integer.parseInt(("" + (btnMake[i].name.hashCode())).substring(1, 4));
-                    int b = Integer.parseInt(("" + (btnMake[i].name.hashCode())).substring(3, 6));
-                    for (Particle p : makes.get(btnMake[i].name)) {
+                if (types.get(btnTypes[i].name).get(0).hc == null) {
+                    int r = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(0, 3));
+                    int g = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(1, 4));
+                    int b = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(2, 5));
+                    for (Particle p : types.get(btnTypes[i].name)) {
                         p.hc = new PVector(r, g, b);
                     }
                 } else {
-                    for (Particle p : makes.get(btnMake[i].name)) {
+                    for (Particle p : types.get(btnTypes[i].name)) {
                         p.hc = null;
                     }
                 }
@@ -218,11 +232,14 @@ public class DustAndMagnet extends PApplet {
         // TODO font fall backs or more native choices
         textFont(new PFont(PFont.findFont("Andale Mono"), true));
 
-        btnMag = new Button[4];
+        // using <code>particles.get(0).data.size();</code>
+        // to grab a "sample" data entry and find out number of magnets etc
+        btnMag = new Button[particles.get(0).data.size()];
+        Iterator<String> magNames = particles.get(0).data.keySet().iterator();
         buttonSize = new PVector(60, 60);
         PVector button = new PVector(10, HEIGHT - buttonSize.y - 10);
-        for (int i = 0; i < 4; i++) {
-            btnMag[i] = new Button((int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
+        for (int i = 0; i < btnMag.length; i++) {
+            btnMag[i] = new Button(magNames.next(), (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
             button.x += buttonSize.x + 10;
         }
 
@@ -230,13 +247,17 @@ public class DustAndMagnet extends PApplet {
                 (int)HEIGHT - (int)buttonSize.y - 10, (int)buttonSize.x, (int)buttonSize.y));
 
         buttonSize = new PVector(90, 30);
-        Iterable<String> makeNames = makes.keySet();
-        btnMake = new Button[makes.size()];
+        Iterable<String> typeNames = types.keySet();
+        btnTypes = new Button[types.size()];
         button = new PVector(10, 10);
         int i = 0;
-        for (String m : makeNames) {
-            btnMake[i++] = new Button(m, (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
+        for (String t : typeNames) {
+            btnTypes[i++] = new Button(t, (int) button.x, (int) button.y, (int) buttonSize.x, (int) buttonSize.y);
             button.y += buttonSize.y + 10;
+            if (button.y >= HEIGHT - buttonSize.y) {
+                button.y = 10;
+                button.x += buttonSize.x + 10;
+            }
         }
     }
 
@@ -245,8 +266,8 @@ public class DustAndMagnet extends PApplet {
         for (int i = 0; i < btnMag.length; i++) {
             btnMag[i].draw(this);
         }
-        for (int i = 0; i < btnMake.length; i++) {
-            btnMake[i].draw(this);
+        for (int i = 0; i < btnTypes.length; i++) {
+            btnTypes[i].draw(this);
         }
         trash.draw(this);
     }

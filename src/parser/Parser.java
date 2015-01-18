@@ -5,7 +5,7 @@ import java.io.*;
 
 public class Parser {
     public static ArrayList<Data> data;
-    public static void fileContent() throws Exception{
+    public static void fileContent() throws FileNotFoundException{
         final int ROWS = 1202;
         final int COLUMNS = 5;
         data = new ArrayList<Data>();
@@ -97,7 +97,11 @@ public class Parser {
             d.hwy = (d.hwy - min) / range;
         }
 
-        System.out.println(data);
+        for (Data d : data) {
+            d.makeStuff();
+        }
+
+//        System.out.println(data);
         System.out.println(data.size());
 
     }
