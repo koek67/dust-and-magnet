@@ -71,7 +71,7 @@ label {
  * I want my pure-button elements to look a little different
  */
 .pure-button {
-    background-color: #1f8dd6;
+    background-color: #1f4dd6;
     color: white;
     padding: 0.5em 2em;
     border-radius: 5px;
@@ -132,7 +132,7 @@ a.pure-button-primary {
  */
 
 .splash-container {
-    background: #1f8dd6;
+    background-image: url("../../img/common/background.jpg");
     z-index: 1;
     overflow: hidden;
     /* The following styles are required for the "scroll-over" effect */
@@ -258,6 +258,7 @@ a.pure-button-primary {
     }
 
     .splash-head {
+        background-color: rgba(204,255,255,.1);
         font-size: 250%;
     }
 
