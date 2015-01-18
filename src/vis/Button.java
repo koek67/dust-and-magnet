@@ -1,6 +1,6 @@
-package sample;
+package vis;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
  * Created by andrew on 1/17/15.

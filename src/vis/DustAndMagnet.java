@@ -1,4 +1,4 @@
-package sample;
+package vis;
 
 import parser.Parser;
 import processing.core.PApplet;

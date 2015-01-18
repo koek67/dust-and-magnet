@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sample;
+package vis;
 
 import processing.core.PApplet;
 import processing.core.PVector;

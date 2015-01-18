@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sample;
+package vis;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -24,7 +24,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        PApplet.main(new String[] { sample.DustAndMagnet.class.getName() });
+        PApplet.main(new String[] { vis.DustAndMagnet.class.getName() });
 //        launch(args);
     }
 

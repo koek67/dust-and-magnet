@@ -1,4 +1,4 @@
-package sample;
+package vis;
 
 import processing.core.PApplet;
 import processing.core.PVector;
