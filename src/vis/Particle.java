@@ -61,8 +61,8 @@ public class Particle {
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);
-            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 50;
-            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 50;
+            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 25;
+            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 25;
         }
     }
 
