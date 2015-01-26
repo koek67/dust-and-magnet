@@ -51,28 +51,18 @@ public class Particle {
     }
 
     public void updateLocation() {
-        vel.add(accel);
-        if (vel.mag() > 1)
-            vel.mult(1/vel.mag());
-        loc.add(vel);
+        loc.x += vel.x;
+        loc.y += vel.y;
     }
 
     public void attract(DustAndMagnet p) {
         Iterable<Magnet> ms = (Iterable<Magnet>) p.getMagnets();
-        accel = new PVector();
+        vel = new PVector();
         for (Magnet m : ms) {
             String attrName = m.getName();
-            float value = (float) (data.get(attrName) * m.getValue() * 100);
-            float dist = (float) Math.sqrt((Math.pow((m.getLoc().x - loc.x), 2) + Math.pow((m.getLoc().y - loc.y), 2)));
-//            float dist = (float) (Math.pow((m.getLoc().x - loc.x), 2) + Math.pow((m.getLoc().y - loc.y), 2));
-            if (dist < 20) { continue; }
-            float theta = (float) (Math.atan2(m.getLoc().y - loc.y, m.getLoc().x - loc.x));
-            accel.x += (float) Math.cos(theta) * (value / dist);
-            accel.y += (float) Math.sin(theta) * (value / dist);
-//            accel.x += value * (Math.cos(theta) * dist);
-//            accel.y += value * (Math.sin(theta) * dist);
-//            vel.x += value * (m.getLoc().x - loc.x);
-//            vel.y += value * (m.getLoc().y - loc.y);
+            double value = data.get(attrName);
+            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 25;
+            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 25;
         }
     }
 
