@@ -64,7 +64,10 @@ public class DustAndMagnet extends PApplet {
     public void fillParticles() {
         try {
             parser.Parser2.fileContent();
-        } catch (FileNotFoundException e) {}
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found.]\nExiting");
+            return;
+        }
         Random numGen = new Random();
         for (parser.Data d : parser.Parser2.data) {
             int randX = numGen.nextInt(WIDTH);
