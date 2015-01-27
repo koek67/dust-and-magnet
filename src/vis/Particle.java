@@ -51,13 +51,13 @@ public class Particle {
     }
 
     public void updateLocation() {
-        loc.x += vel.x;
-        loc.y += vel.y;
+        vel.mult(.9f);
+        loc.add(vel);
     }
 
     public void attract(DustAndMagnet p) {
         Iterable<Magnet> ms = (Iterable<Magnet>) p.getMagnets();
-        vel = new PVector();
+//        vel = new PVector();
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);
