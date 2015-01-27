@@ -1,5 +1,7 @@
 package quadtree;
 
+import vis.Particle;
+
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
@@ -11,11 +13,12 @@ import java.util.ArrayList;
  */
 public class Quadtree {
 
-    public static final int MAX_OBJECTS = 4;
+    public static final int MAX_OBJECTS = 20;
 
     private Quadtree[] nodes;
+	private Quadtree parent;
     private int level;
-    private ArrayList<Shape> objects;
+    private ArrayList<Particle> objects;
     private Rectangle bounds;
     private boolean leaf;
     
@@ -24,7 +27,7 @@ public class Quadtree {
      * @param pBounds - bounds of the new node (one quarter of the parent node)
      */
     public Quadtree(Rectangle pBounds) {
-        this(0, pBounds);
+        this(0, null, pBounds);
     }
     
     /**
@@ -32,15 +35,16 @@ public class Quadtree {
      * @param pLevel - level of the new node (top level = 0)
      * @param pBounds - bounds of the new node (one quarter of the parent node)
      */
-    private Quadtree(int pLevel, Rectangle pBounds) {
+    private Quadtree(int pLevel, Quadtree pParent, Rectangle pBounds) {
         level = pLevel;
         bounds = pBounds;
+		this.parent = pParent;
         clear();
     }
 
 	public void clear() {
-		nodes = new Quadtree[4];
-		objects = new ArrayList<Shape>();
+//		nodes = new Quadtree[4];
+		objects = new ArrayList<Particle>();
 		leaf = true;
 	}
 
@@ -53,7 +57,7 @@ public class Quadtree {
      * @param s - shape to be added to the Quadtree
      * @return the level that the shape was added to.
      */
-    public int add(Shape s) {
+    public int add(Particle s) {
     	if(!this.contains(s)) {
     		return -1; // TODO error code! redo with exception
     	}
@@ -71,6 +75,7 @@ public class Quadtree {
     	}
     	// if failed to fit into child, add here
 		objects.add(s);
+		s.setQuadtree(this);
 		return level;
     }
     
@@ -78,25 +83,51 @@ public class Quadtree {
      * Get all objects at this node
      * @return an ArrayList of all the shapes contained within this
 	 * Quadtree and all its children
+	 *
+	 * TODO fix this, infinite loops or something
+	 * TODO fix heap space errors (out of memory)
      */
     @SuppressWarnings("unchecked")
-	public ArrayList<Shape> getAll() {
-    	if(leaf) { return getImmediate(); }
-    	ArrayList<Shape> obj = nodes[0].getAll();
-    	for(int i = 1; i < nodes.length; i++) {
+	public ArrayList<Particle> getAll() {
+		ArrayList<Particle> obj = objects;
+		// Traverse up
+		Quadtree curr = parent;
+		while(curr != null) {
+			obj.addAll(parent.objects);
+			curr = parent.parent;
+		}
+		// Traverse down
+    	for(int i = 0; nodes != null && i < nodes.length; i++) {
     		obj.addAll(nodes[i].getAll());
     	}
     	obj.addAll(objects);
     	return obj;
     }
 
+	public ArrayList<Particle> getUp() {
+		ArrayList<Particle> obj = new ArrayList<Particle>();
+		// Traverse up
+		Quadtree curr = parent;
+		while (curr != null) {
+			obj.addAll(parent.objects);
+			curr = curr.parent;
+		}
+		return obj;
+	}
+
+	private void addAll(ArrayList<Particle> parent, ArrayList<Particle> child) {
+		for (Particle c : child) {
+			parent.add(c);
+		}
+	}
+
 	/**
 	 *
 	 * @return only the immediate shapes contained in this Quadtree
 	 * (none of the children's shapes)
 	 */
-	public ArrayList<Shape> getImmediate() {
-		return (ArrayList<Shape>) objects.clone();
+	public ArrayList<Particle> getImmediate() {
+		return objects;
 	}
     
     /**
@@ -127,7 +158,7 @@ public class Quadtree {
      * @param s - shape in question
      * @return true if this node complete contains the shape
      */
-	private boolean contains(Shape s) {
+	private boolean contains(Particle s) {
 		return bounds.contains(s.getBounds());
 	}
 
@@ -135,18 +166,19 @@ public class Quadtree {
 	 * Splits the quadtree.Quadtree into nodes and adds the shapes to the proper children
 	 */
 	private void split() {
+		nodes = new Quadtree[4];
 		leaf = false;
 		int nWidth = bounds.width / 2;
 		int nHeight = bounds.height / 2;
-		nodes[0] = new Quadtree(level + 1, new Rectangle(bounds.x, bounds.y, nWidth, nHeight));
-		nodes[1] = new Quadtree(level + 1, new Rectangle(bounds.x + nWidth, bounds.y, nWidth, nHeight));
-		nodes[2] = new Quadtree(level + 1, new Rectangle(bounds.x, bounds.y + nHeight, nWidth, nHeight));
-		nodes[3] = new Quadtree(level + 1, new Rectangle(bounds.x + nWidth, bounds.y + nHeight, nWidth, nHeight));
+		nodes[0] = new Quadtree(level + 1, this, new Rectangle(bounds.x, bounds.y, nWidth, nHeight));
+		nodes[1] = new Quadtree(level + 1, this, new Rectangle(bounds.x + nWidth, bounds.y, nWidth, nHeight));
+		nodes[2] = new Quadtree(level + 1, this, new Rectangle(bounds.x, bounds.y + nHeight, nWidth, nHeight));
+		nodes[3] = new Quadtree(level + 1, this, new Rectangle(bounds.x + nWidth, bounds.y + nHeight, nWidth, nHeight));
 		
 		@SuppressWarnings("unchecked")
-		ArrayList<Shape> objs = (ArrayList<Shape>) objects.clone();
-		objects = new ArrayList<Shape>();
-		for(Shape s : objs) {
+		ArrayList<Particle> objs = (ArrayList<Particle>) objects.clone();
+		objects = new ArrayList<Particle>();
+		for(Particle s : objs) {
 			add(s);
 		}
 	}
@@ -157,14 +189,7 @@ public class Quadtree {
 		for (int j = 0; j < level; j++) {
 			s += "\t";
 		}
-		s += "Shapes: [";
-		if (objects.size() > 0) {
-			s += objects.get(0).toString();
-		}
-		for (int i = 1; i < objects.size(); i++) {
-			s += ", " + objects.toString();
-		}
-		s += "]\n";
+		s += "Shapes: " + objects.toString() + "\n";
 		if (!leaf) {
 			for (int i = 0; i < nodes.length; i++) {
 				for (int j = 0; j < nodes[i].level; j++) {

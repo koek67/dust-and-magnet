@@ -4,6 +4,7 @@ import parser.Parser;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PVector;
+import quadtree.Quadtree;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -14,11 +15,12 @@ import java.awt.Rectangle;
  * Dust and Magnet simulation.
  */
 public class DustAndMagnet extends PApplet {
-    public static int WIDTH = 1280;
-    public static int HEIGHT = 800;
+    public static int WIDTH = 640;
+    public static int HEIGHT = 400;
 
     private Map<String, Magnet> magnets;
     private ArrayList<Particle> particles;
+    private Quadtree q;
     private Map<String, LinkedList<Particle>> types;
 
     // selecting magnets
@@ -41,7 +43,7 @@ public class DustAndMagnet extends PApplet {
      */
     public void fillParticlesTEST() {
         Random numGen = new Random();
-        int numParticles = 700;
+        int numParticles = 19;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -57,6 +59,7 @@ public class DustAndMagnet extends PApplet {
                 make = "Toyota";
             Particle a = new Particle(randX, randY, data, "" + i, make);
             particles.add(a);
+            q.add(a);
             addCategoryEntry(a);
         }
     }
@@ -71,6 +74,7 @@ public class DustAndMagnet extends PApplet {
             int randY = numGen.nextInt(HEIGHT);
             Particle a = new Particle(randX, randY, d.norm, d.name, d.cat);
             particles.add(a);
+            q.add(a);
             addCategoryEntry(a);
         }
 
@@ -101,9 +105,11 @@ public class DustAndMagnet extends PApplet {
         background(32);
 
         magnets = new HashMap<String, Magnet>();
+        q = new Quadtree(new Rectangle(WIDTH, HEIGHT));
         particles = new ArrayList<Particle>();
         types = new HashMap<String, LinkedList<Particle>>();
-        fillParticles();
+        fillParticlesTEST();
+//        System.out.println(q);
         initUI();
     }
 
@@ -126,14 +132,22 @@ public class DustAndMagnet extends PApplet {
         for (Magnet m : magnets.values()) {
             m.draw(this);
         }
-
         // iterate through all the current particles
         // and draw them
         for (Particle p : particles) {
+            q.add(p);
+        }
+        repel(q);
+        for (Particle p : particles) {
             p.attract(this);
+        }
+        drawQuadtree(q);
+        for (Particle p : particles) {
             p.updateLocation();
             p.draw(this);
         }
+        q.clear();
+
         boolean done = false;
         for (int i = particles.size() - 1; i >= 0; i--) {
             Particle p = particles.get(i);
@@ -152,6 +166,70 @@ public class DustAndMagnet extends PApplet {
             }
         }
     }
+
+    private void repel(Quadtree q) {
+
+        if (!q.isLeaf()) {
+            for (Quadtree c : q.getChildren()) {
+                repel(c);
+            }
+        }
+
+        ArrayList<Particle> ps = q.getImmediate();
+        ArrayList<Particle> os = q.getUp();
+        for (int i = 0; i < ps.size() - 1; i++) {
+            Particle p = ps.get(i);
+            // Checking with others in the same Quadtree
+            for (int j = i + 1; j < ps.size(); j++) {
+                repel(p, ps.get(j));
+            }
+            // Checking with other particles on parent Quadtrees
+            for (int k = 0; k < os.size(); k++) {
+                Particle o = os.get(k);
+                repel(p, o);
+            }
+        }
+    }
+
+    boolean repel = false;
+
+    private void repel(Particle p, Particle o) {
+        if (!repel) { return; }
+        if (Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2)) < 20) {
+            float mag = 20 - (float) Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2));
+//            if (mag > 5) { mag = 5; }
+            float theta = (float) Math.atan2(p.loc.y - o.loc.y, p.loc.x - o.loc.x);
+            PVector d = new PVector((float) (mag * Math.cos(theta)), (float) (mag * Math.sin(theta)));
+            p.loc.add(d);
+            o.loc.sub(d);
+//            float dx = 1 / (p.loc.x - o.loc.x);
+//            if (dx > 2) {
+//                dx = 2;
+//            }
+//            p.vel.x += dx;
+//            o.vel.x -= dx;
+//            float dy = 1 / (p.loc.y - o.loc.y);
+//            if (dy > 2) {
+//                dy = 2;
+//            }
+//            p.vel.y += dy;
+//            o.vel.y -= dy;
+        }
+    }
+
+    public void drawQuadtree(Quadtree curr) {
+
+        if (!curr.isLeaf()) {
+            Quadtree[] branches = curr.getChildren();
+            for (Quadtree b : branches) {
+                drawQuadtree(b);
+            }
+        }
+        noFill();
+        stroke(200f);
+        rect(curr.bounds().x, curr.bounds().y, curr.bounds().width, curr.bounds().height);
+    }
+
 
     public void mouseClicked() {
         boolean done = false;
@@ -184,6 +262,8 @@ public class DustAndMagnet extends PApplet {
                 }
             }
         }
+        repel = !repel;
+        System.out.println("Repel " + repel);
     }
 
     public void mousePressed() {
@@ -259,7 +339,7 @@ public class DustAndMagnet extends PApplet {
         buttonSize = new PVector(120, 60);
         // using <code>particles.get(0).data.size();</code>
         // to grab a "sample" data entry and find out number of magnets etc
-        System.out.println(particles.get(0).data);
+//        System.out.println(particles.get(0).data);
         btnMag = new Button[particles.get(0).data.size()];
         Iterator<String> magNames = particles.get(0).data.keySet().iterator();
         for (int j = 0; j < btnMag.length; j++) {

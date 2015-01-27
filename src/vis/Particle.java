@@ -2,14 +2,13 @@ package vis;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import quadtree.Quadtree;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by koushikkrishnan on 1/17/15.
- */
 public class Particle {
     PVector loc, vel, accel;
     /**
@@ -23,10 +22,13 @@ public class Particle {
     String name;
     // highlight color
     PVector hc;
+    Rectangle bounds;
     int dia;
+    int dia2;
     int bound;
 
     boolean drawName;
+    Quadtree quadtree;
 
     public Particle(int x, int y) {
         this(x, y, new HashMap<String, Double>(), "Mustang", "Ford");
@@ -41,7 +43,9 @@ public class Particle {
         this.cat = cat;
         drawName = false;
         dia = 20;
+        dia2 = dia * 2;
         bound = (int) (Math.pow((dia / 2), 2) * 1.15);
+        bounds = new Rectangle((int) loc.x, (int) loc.y, dia, dia);
     }
 
     public void draw(DustAndMagnet p) {
@@ -55,8 +59,10 @@ public class Particle {
     }
 
     public void updateLocation() {
-        vel.mult(.9f);
+        vel.mult(.5f);
         loc.add(vel);
+        bounds.x = (int) loc.x;
+        bounds.y = (int) loc.y;
     }
 
     public void attract(DustAndMagnet p) {
@@ -74,4 +80,16 @@ public class Particle {
         return ((loc.x - x) * (loc.x - x) + (loc.y - y) * (loc.y - y)) <= bound;
     }
 
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setQuadtree(Quadtree quadtree) {
+//        this.quadtree = quadtree;
+    }
+
+    public String toString() {
+        String s = name;
+        return s;
+    }
 }
