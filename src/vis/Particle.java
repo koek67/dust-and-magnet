@@ -23,6 +23,8 @@ public class Particle {
     String name;
     // highlight color
     PVector hc;
+    int dia;
+    int bound;
 
     boolean drawName;
 
@@ -38,6 +40,8 @@ public class Particle {
         this.name = name;
         this.cat = cat;
         drawName = false;
+        dia = 20;
+        bound = (int) (Math.pow((dia / 2), 2) * 1.15);
     }
 
     public void draw(DustAndMagnet p) {
@@ -47,7 +51,7 @@ public class Particle {
             p.fill(hc.x, hc.y, hc.z, 100);
             p.stroke(hc.x, hc.y, hc.z, 100);
         }
-        p.ellipse(loc.x, loc.y, 20, 20);
+        p.ellipse(loc.x, loc.y, dia, dia);
     }
 
     public void updateLocation() {
@@ -67,7 +71,7 @@ public class Particle {
     }
 
     public boolean contains (int x, int y) {
-        return ((loc.x - x) * (loc.x - x) + (loc.y - y) * (loc.y - y)) <= 115;
+        return ((loc.x - x) * (loc.x - x) + (loc.y - y) * (loc.y - y)) <= bound;
     }
 
 }
