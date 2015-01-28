@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Particle {
-    PVector loc, vel, accel, repulseVel;
+    PVector loc, vel, accel;
     /**
      * <code>data</code> is a map of all the attributes of the Particle
      * the key (a string) is the name of the attribute and the
@@ -55,13 +55,26 @@ public class Particle {
             p.fill(hc.x, hc.y, hc.z, 100);
             p.stroke(hc.x, hc.y, hc.z, 100);
         }
+        if (vel.mag() > 5) {
+            p.strokeWeight(10);
+        }
         p.ellipse(loc.x, loc.y, dia, dia);
+        p.strokeWeight(1);
     }
 
     public void updateLocation() {
+        float mag = vel.mag();
+        if (mag > 7) {
+            vel.mult(7 / mag);
+            mag = 7;
+        }
+//        } else if (mag < 1 && mag > 0) {
+//            float newMag = (float) Math.pow(mag, 2);
+//            vel.mult(newMag / mag);
+//            mag = newMag;
+//        }
         loc.add(vel);
-//        loc.add(repulseVel);
-        vel.mult(.4f);
+        vel.mult(.5f);
         bounds.x = (int) loc.x;
         bounds.y = (int) loc.y;
     }
