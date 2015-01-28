@@ -44,7 +44,7 @@ public class DustAndMagnet extends PApplet {
      */
     public void fillParticlesTEST() {
         Random numGen = new Random();
-        int numParticles = 40;
+        int numParticles = 20;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -210,14 +210,22 @@ public class DustAndMagnet extends PApplet {
 
     private void repel(Particle p, Particle o) {
         if (!repel) { return; }
-        if (Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2)) < 20) {
-            float mag = 15 / (float) Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2));
+        float dist = (float) Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2));
+        if (dist < 22) {
+            float mag = 5 / (float) Math.pow(dist, .5);
 //            if (mag > 5) { mag = 5; }
             float theta = (float) Math.atan2(p.loc.y - o.loc.y, p.loc.x - o.loc.x);
             PVector d = new PVector((float) (mag * Math.cos(theta)), (float) (mag * Math.sin(theta)));
             p.vel.add(d);
             o.vel.sub(d);
         }
+//        else if (dist < 21) {
+//            PVector temp = p.vel.get();
+//            p.vel = o.vel;
+//            p.vel.mult(.5f);
+//            o.vel = temp;
+//            o.vel.mult(.5f);
+//        }
     }
 
     public void drawQuadtree(Quadtree curr) {
