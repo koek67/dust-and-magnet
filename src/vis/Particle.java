@@ -49,6 +49,11 @@ public class Particle {
     }
 
     public void draw(DustAndMagnet p) {
+//        try {
+//            p.fill(80 * quadtree.level() - 20, 255, 35, 100);
+//        } catch (NullPointerException e) {
+//            p.fill(255, 255, 35, 100);
+//        }
         p.fill(66, 255, 35, 100);
         p.stroke(66, 255, 35, 100);
         if (hc != null) {
@@ -99,7 +104,7 @@ public class Particle {
     }
 
     public void setQuadtree(Quadtree quadtree) {
-//        this.quadtree = quadtree;
+        this.quadtree = quadtree;
     }
 
     public String toString() {

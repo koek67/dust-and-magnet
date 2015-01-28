@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Quadtree {
 
-    public static final int MAX_OBJECTS = 100;
+    public static final int MAX_OBJECTS = 500;
 
     private Quadtree[] nodes;
 	private Quadtree parent;

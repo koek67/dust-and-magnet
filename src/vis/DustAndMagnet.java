@@ -16,8 +16,8 @@ import java.awt.Rectangle;
  * Dust and Magnet simulation.
  */
 public class DustAndMagnet extends PApplet {
-    public static int WIDTH = 640;
-    public static int HEIGHT = 400;
+    public static int WIDTH = 800;
+    public static int HEIGHT = 640;
 
     private Map<String, Magnet> magnets;
     private ArrayList<Particle> particles;
@@ -44,7 +44,7 @@ public class DustAndMagnet extends PApplet {
      */
     public void fillParticlesTEST() {
         Random numGen = new Random();
-        int numParticles = 20;
+        int numParticles = 200;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -109,7 +109,7 @@ public class DustAndMagnet extends PApplet {
         q = new Quadtree(new Rectangle(WIDTH, HEIGHT));
         particles = new ArrayList<Particle>();
         types = new HashMap<String, LinkedList<Particle>>();
-        fillParticlesTEST();
+        fillParticles();
 //        System.out.println(q);
         initUI();
     }
@@ -142,7 +142,7 @@ public class DustAndMagnet extends PApplet {
         for (Particle p : particles) {
             p.attract(this);
         }
-        drawQuadtree(q);
+//        drawQuadtree(q);
         for (Particle p : particles) {
             p.updateLocation();
             p.draw(this);
@@ -191,7 +191,7 @@ public class DustAndMagnet extends PApplet {
 
         ArrayList<Particle> ps = q.getImmediate();
         ArrayList<Particle> os = q.getUp();
-        for (int i = 0; i < ps.size() - 1; i++) {
+        for (int i = 0; i < ps.size(); i++) {
             Particle p = ps.get(i);
             // Checking with others in the same Quadtree
             for (int j = i + 1; j < ps.size(); j++) {
@@ -199,8 +199,7 @@ public class DustAndMagnet extends PApplet {
             }
             // Checking with other particles on parent Quadtrees
             for (int k = 0; k < os.size(); k++) {
-                Particle o = os.get(k);
-                repel(p, o);
+                repel(p, os.get(k));
             }
         }
     }
