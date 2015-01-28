@@ -44,7 +44,8 @@ public class Magnet {
     }
     public void draw(DustAndMagnet d) {
         d.stroke(0);
-        d.fill(256f);
+//        d.fill(256f);
+        d.noFill();
         d.ellipse(loc.x, loc.y, dia, dia);
         d.fill(0);
         d.textSize(20);

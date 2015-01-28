@@ -2,14 +2,13 @@ package vis;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import quadtree.Quadtree;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by koushikkrishnan on 1/17/15.
- */
 public class Particle {
     PVector loc, vel, accel;
     /**
@@ -23,8 +22,13 @@ public class Particle {
     String name;
     // highlight color
     PVector hc;
+    Rectangle bounds;
+    int dia;
+    int dia2;
+    int bound;
 
     boolean drawName;
+    Quadtree quadtree;
 
     public Particle(int x, int y) {
         this(x, y, new HashMap<String, Double>(), "Mustang", "Ford");
@@ -38,36 +42,73 @@ public class Particle {
         this.name = name;
         this.cat = cat;
         drawName = false;
+        dia = 20;
+        dia2 = dia * 2;
+        bound = (int) (Math.pow((dia / 2), 2) * 1.15);
+        bounds = new Rectangle((int) loc.x, (int) loc.y, dia, dia);
     }
 
     public void draw(DustAndMagnet p) {
+//        try {
+//            p.fill(80 * quadtree.level() - 20, 255, 35, 100);
+//        } catch (NullPointerException e) {
+//            p.fill(255, 255, 35, 100);
+//        }
         p.fill(66, 255, 35, 100);
         p.stroke(66, 255, 35, 100);
         if (hc != null) {
             p.fill(hc.x, hc.y, hc.z, 100);
             p.stroke(hc.x, hc.y, hc.z, 100);
         }
-        p.ellipse(loc.x, loc.y, 20, 20);
+        if (vel.mag() > 5) {
+            p.strokeWeight(10);
+        }
+        p.ellipse(loc.x, loc.y, dia, dia);
+        p.strokeWeight(1);
     }
 
     public void updateLocation() {
-        loc.x += vel.x;
-        loc.y += vel.y;
+        float mag = vel.mag();
+        if (mag > 7) {
+            vel.mult(7 / mag);
+            mag = 7;
+        }
+//        } else if (mag < 1 && mag > 0) {
+//            float newMag = (float) Math.pow(mag, 2);
+//            vel.mult(newMag / mag);
+//            mag = newMag;
+//        }
+        loc.add(vel);
+        vel.mult(.5f);
+        bounds.x = (int) loc.x;
+        bounds.y = (int) loc.y;
     }
 
     public void attract(DustAndMagnet p) {
         Iterable<Magnet> ms = (Iterable<Magnet>) p.getMagnets();
-        vel = new PVector();
+//        vel = new PVector();
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);
-            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 25;
-            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 25;
+            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 50;
+            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 50;
         }
     }
 
     public boolean contains (int x, int y) {
-        return ((loc.x - x) * (loc.x - x) + (loc.y - y) * (loc.y - y)) <= 115;
+        return ((loc.x - x) * (loc.x - x) + (loc.y - y) * (loc.y - y)) <= bound;
     }
 
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setQuadtree(Quadtree quadtree) {
+        this.quadtree = quadtree;
+    }
+
+    public String toString() {
+        String s = name;
+        return s;
+    }
 }
