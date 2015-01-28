@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Particle {
-    PVector loc, vel, accel;
+    PVector loc, vel, accel, repulseVel;
     /**
      * <code>data</code> is a map of all the attributes of the Particle
      * the key (a string) is the name of the attribute and the
@@ -59,8 +59,9 @@ public class Particle {
     }
 
     public void updateLocation() {
-        vel.mult(.5f);
         loc.add(vel);
+//        loc.add(repulseVel);
+        vel.mult(.4f);
         bounds.x = (int) loc.x;
         bounds.y = (int) loc.y;
     }
@@ -71,8 +72,8 @@ public class Particle {
         for (Magnet m : ms) {
             String attrName = m.getName();
             double value = data.get(attrName);
-            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 25;
-            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 25;
+            vel.x += m.getValue() * value * (m.getLoc().x - loc.x) / 50;
+            vel.y += m.getValue() * value * (m.getLoc().y - loc.y) / 50;
         }
     }
 

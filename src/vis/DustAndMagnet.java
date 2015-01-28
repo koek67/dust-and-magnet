@@ -1,5 +1,6 @@
 package vis;
 
+import com.sun.javafx.binding.StringFormatter;
 import parser.Parser;
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -43,7 +44,7 @@ public class DustAndMagnet extends PApplet {
      */
     public void fillParticlesTEST() {
         Random numGen = new Random();
-        int numParticles = 19;
+        int numParticles = 40;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -162,9 +163,22 @@ public class DustAndMagnet extends PApplet {
             if(p.drawName) {
                 textSize(16);
                 fill(256f);
-                text(p.name, p.loc.x + 5, p.loc.y - 5);
+//                text(p.name, p.loc.x + 5, p.loc.y - 5);
+                // TODO this is diagnostic part
+                text(p.name + " " + velToString(p.vel), p.loc.x + 5, p.loc.y - 5);
+                PVector uVel = p.vel.get();
+                uVel.mult(20);
+                strokeWeight(5);
+                stroke(256f);
+                line(p.loc.x, p.loc.y, uVel.x + p.loc.x, uVel.y + p.loc.y);
+                strokeWeight(1);
             }
         }
+    }
+
+    // This is a debug tool
+    private String velToString(PVector v) {
+        return String.format("[ %.3f, %.3f ]", v.x, v.y);
     }
 
     private void repel(Quadtree q) {
@@ -191,29 +205,18 @@ public class DustAndMagnet extends PApplet {
         }
     }
 
+    // TODO I don't know why this needs to start as false.
     boolean repel = false;
 
     private void repel(Particle p, Particle o) {
         if (!repel) { return; }
         if (Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2)) < 20) {
-            float mag = 20 - (float) Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2));
+            float mag = 15 / (float) Math.sqrt(Math.pow((p.loc.x - o.loc.x), 2) + Math.pow((p.loc.y - o.loc.y), 2));
 //            if (mag > 5) { mag = 5; }
             float theta = (float) Math.atan2(p.loc.y - o.loc.y, p.loc.x - o.loc.x);
             PVector d = new PVector((float) (mag * Math.cos(theta)), (float) (mag * Math.sin(theta)));
-            p.loc.add(d);
-            o.loc.sub(d);
-//            float dx = 1 / (p.loc.x - o.loc.x);
-//            if (dx > 2) {
-//                dx = 2;
-//            }
-//            p.vel.x += dx;
-//            o.vel.x -= dx;
-//            float dy = 1 / (p.loc.y - o.loc.y);
-//            if (dy > 2) {
-//                dy = 2;
-//            }
-//            p.vel.y += dy;
-//            o.vel.y -= dy;
+            p.vel.add(d);
+            o.vel.sub(d);
         }
     }
 
