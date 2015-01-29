@@ -24,7 +24,7 @@ public class Particle {
     PVector hc;
     Rectangle bounds;
     int dia;
-    int dia2;
+    int rad;
     int bound;
 
     boolean drawName;
@@ -43,9 +43,9 @@ public class Particle {
         this.cat = cat;
         drawName = false;
         dia = 20;
-        dia2 = dia * 2;
+        rad = dia / 2;
         bound = (int) (Math.pow((dia / 2), 2) * 1.15);
-        bounds = new Rectangle((int) loc.x, (int) loc.y, dia, dia);
+        bounds = new Rectangle((int) loc.x - rad, (int) loc.y - rad, dia, dia);
     }
 
     public void draw(DustAndMagnet p) {
@@ -64,6 +64,7 @@ public class Particle {
             p.strokeWeight(10);
         }
         p.ellipse(loc.x, loc.y, dia, dia);
+//        p.rect(bounds.x, bounds.y, bounds.width, bounds.height);
         p.strokeWeight(1);
     }
 
@@ -80,8 +81,8 @@ public class Particle {
 //        }
         loc.add(vel);
         vel.mult(.5f);
-        bounds.x = (int) loc.x;
-        bounds.y = (int) loc.y;
+        bounds.x = (int) loc.x - rad;
+        bounds.y = (int) loc.y - rad;
     }
 
     public void attract(DustAndMagnet p) {

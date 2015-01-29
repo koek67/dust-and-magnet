@@ -1,6 +1,5 @@
 package vis;
 
-import com.sun.javafx.binding.StringFormatter;
 import parser.Parser;
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -16,8 +15,8 @@ import java.awt.Rectangle;
  * Dust and Magnet simulation.
  */
 public class DustAndMagnet extends PApplet {
-    public static int WIDTH = 800;
-    public static int HEIGHT = 640;
+    public static int WIDTH = 1280;
+    public static int HEIGHT = 800;
 
     private Map<String, Magnet> magnets;
     private ArrayList<Particle> particles;
@@ -44,7 +43,7 @@ public class DustAndMagnet extends PApplet {
      */
     public void fillParticlesTEST() {
         Random numGen = new Random();
-        int numParticles = 200;
+        int numParticles = 10;
         for (int i = 0; i < numParticles; i++) {
             int randX = numGen.nextInt(WIDTH);
             int randY = numGen.nextInt(HEIGHT);
@@ -110,6 +109,7 @@ public class DustAndMagnet extends PApplet {
         particles = new ArrayList<Particle>();
         types = new HashMap<String, LinkedList<Particle>>();
         fillParticles();
+//        fillParticlesTEST();
 //        System.out.println(q);
         initUI();
     }
@@ -120,13 +120,31 @@ public class DustAndMagnet extends PApplet {
 //        fill(64, 64, 64, 100);
 //        rect(0, 0, WIDTH, HEIGHT);
         background(32);
-        // if a new magnet is being added, draw it
-        // at the mouse cursor location
+
+        // TODO testing
+//        Quadtree curr = q;
+//        while (!curr.isLeaf()) {
+//            for(Quadtree qt : curr.getChildren()) {
+//                if (qt.bounds().contains(mouseX, mouseY)) {
+//                    curr = qt;
+//                }
+//            }
+//        }
+//        fill(255f);
+//        text(curr.level(), mouseX, mouseY);
+
+        compares = 0;
+
         drawDnM();
         drawUI();
+
+        fill(255f);
+        text(compares, WIDTH - 100, 50);
     }
 
     public void drawDnM() {
+        q.clear();
+
         fill(256);
         // iterate through all the current magnets
         // and draw them
@@ -142,12 +160,11 @@ public class DustAndMagnet extends PApplet {
         for (Particle p : particles) {
             p.attract(this);
         }
-//        drawQuadtree(q);
+        drawQuadtree(q);
         for (Particle p : particles) {
             p.updateLocation();
             p.draw(this);
         }
-        q.clear();
 
         boolean done = false;
         for (int i = particles.size() - 1; i >= 0; i--) {
@@ -165,7 +182,7 @@ public class DustAndMagnet extends PApplet {
                 fill(256f);
 //                text(p.name, p.loc.x + 5, p.loc.y - 5);
                 // TODO this is diagnostic part
-                text(p.name + " " + velToString(p.vel), p.loc.x + 5, p.loc.y - 5);
+                text(particleToString(p), p.loc.x + 5, p.loc.y - 5);
                 PVector uVel = p.vel.get();
                 uVel.mult(20);
                 strokeWeight(5);
@@ -177,8 +194,9 @@ public class DustAndMagnet extends PApplet {
     }
 
     // This is a debug tool
-    private String velToString(PVector v) {
-        return String.format("[ %+.2f, %+.2f ] %.2f", v.x, v.y, v.mag());
+    private String particleToString(Particle p) {
+//        return String.format("%s %d [%+.2f, %+.2f ] %.2f", p.name, p.quadtree.level(), p.vel.x, p.vel.y, p.vel.mag());
+        return p.name + " " + p.quadtree.level();
     }
 
     private void repel(Quadtree q) {
@@ -206,6 +224,7 @@ public class DustAndMagnet extends PApplet {
 
     // TODO I don't know why this needs to start as false.
     boolean repel = false;
+    int compares = 0;
 
     private void repel(Particle p, Particle o) {
         if (!repel) { return; }
@@ -218,6 +237,7 @@ public class DustAndMagnet extends PApplet {
             p.vel.add(d);
             o.vel.sub(d);
         }
+        compares++;
     }
 
     public void drawQuadtree(Quadtree curr) {
@@ -236,26 +256,14 @@ public class DustAndMagnet extends PApplet {
 
     public void mouseClicked() {
         boolean done = false;
-        for (int i = particles.size() - 1; i >= 0 && !done; i--) {
-            Particle p = particles.get(i);
-            if(p.contains(mouseX, mouseY)) {
-                p.drawName = !p.drawName;
-                done = true;
-            }
-        }
+        // Buttons/UI are on top so search for hit there first
         for (int i = 0; i < btnTypes.length; i++) {
             if (btnTypes[i].contains(mouseX, mouseY)) {
-                Random numGen = new Random();
                 // if the elements aren't highlighted, then highlight them
                 // otherwise set highlight color to null
                 // this is a "Toggle"
                 if (types.get(btnTypes[i].name).get(0).hc == null) {
-//                    int r = 256, g = 256, b = numGen.nextInt(50) + 200;
-//                    int r = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(0, 3));
-//                    int g = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(1, 4));
-//                    int b = Integer.parseInt(("" + (btnTypes[i].name.hashCode())).substring(3, 6));
                     for (Particle p : types.get(btnTypes[i].name)) {
-//                        p.hc = new PVector(r, g, b);
                         p.hc = new PVector(256, 256, 256);
                     }
                 } else {
@@ -263,10 +271,24 @@ public class DustAndMagnet extends PApplet {
                         p.hc = null;
                     }
                 }
+                done = true;
             }
         }
-        repel = !repel;
-        System.out.println("Repel " + repel);
+        // search through particles in reverse array order aka in
+        // z-order so the first one found will be the "top" one/last drawn
+        for (int i = particles.size() - 1; i >= 0 && !done; i--) {
+            Particle p = particles.get(i);
+            if(p.contains(mouseX, mouseY)) {
+                p.drawName = !p.drawName;
+                done = true;
+                // TODO debugging tool
+//                System.out.println(particleToString(p) + " : " + p.quadtree.getImmediate() + " " + p.quadtree.getUp());
+            }
+        }
+        if (!done) {
+            repel = !repel;
+            System.out.println("Repel " + repel);
+        }
     }
 
     public void mousePressed() {

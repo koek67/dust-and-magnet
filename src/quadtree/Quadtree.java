@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Quadtree {
 
-    public static final int MAX_OBJECTS = 500;
+    public static final int MAX_OBJECTS = 40;
 
     private Quadtree[] nodes;
 	private Quadtree parent;
@@ -109,7 +109,7 @@ public class Quadtree {
 		// Traverse up
 		Quadtree curr = parent;
 		while (curr != null) {
-			obj.addAll(parent.objects);
+			obj.addAll(curr.objects);
 			curr = curr.parent;
 		}
 		return obj;
@@ -158,7 +158,7 @@ public class Quadtree {
      * @param s - shape in question
      * @return true if this node complete contains the shape
      */
-	private boolean contains(Particle s) {
+	public boolean contains(Particle s) {
 		return bounds.contains(s.getBounds());
 	}
 
